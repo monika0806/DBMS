@@ -1,0 +1,53 @@
+import requests
+from getpass import getpass
+
+BASE_URL = "http://127.0.0.1:5000/api"
+
+print("\n===== SHARESPACE ADD RESOURCE =====")
+
+email = input("Admin Email: ")
+password = getpass("Admin Password: ")
+
+# ADMIN LOGIN
+
+response = requests.post(
+    f"{BASE_URL}/auth/login",
+    json={
+        "email": email,
+        "password": password
+    }
+)
+
+if response.status_code != 200:
+    print("Login failed:", response.json())
+    exit()
+
+token = response.json()["token"]
+
+print("\nAdmin login successful!")
+
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Content-Type": "application/json"
+}
+
+# ADD RESOURCE
+
+resource_data = {
+    "category_id": 1,
+    "resource_name": "Data Structures Book",
+    "description": "Book for learning Data Structures and Algorithms",
+    "condition_status": "Good",
+    "rental_price": 0,
+    "availability_status": "Available"
+}
+
+response = requests.post(
+    f"{BASE_URL}/resources",
+    json=resource_data,
+    headers=headers
+)
+
+print("\n===== RESOURCE CREATION RESULT =====")
+print("Status:", response.status_code)
+print("Response:", response.json())
